@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">WallCano</string>
+    <string-array name="cat_list">
+        <item>POPULAR</item>
+        <item>UPCOMING</item>
+        <item>LATEST</item>
+        <item>EDITOR\'S CHOICE</item>
+    </string-array>
+</resources>
