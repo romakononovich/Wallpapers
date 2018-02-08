@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#646464"
     tools:context="xyz.romakononovich.wallcano.mainactivity.MainActivity">
     <include layout="@layout/toolbar"/>
 
@@ -25,6 +26,7 @@
         app:layout_constraintLeft_toLeftOf="parent" />
 
     <ImageView
+        android:id="@+id/iv_search"
         android:layout_width="0dp"
         android:layout_height="56dp"
         android:background="#333132"
@@ -39,6 +41,7 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:src="@drawable/ic_set_inactive"
+        android:elevation="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />

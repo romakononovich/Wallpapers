@@ -7,4 +7,11 @@
         android:title="FILTER"
         android:icon="@drawable/ic_filter"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/action_search"
+        android:orderInCategory="100"
+        android:title="Search"
+        android:icon="@drawable/ic_search"
+        app:showAsAction="never"
+        app:actionViewClass="android.support.v7.widget.SearchView" />
 </menu>
