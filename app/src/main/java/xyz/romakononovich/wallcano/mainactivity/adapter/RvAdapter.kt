@@ -46,7 +46,6 @@ class RvAdapter : RecyclerView.Adapter<RvAdapter.ViewHolder>() {
                     .fit()
                     .centerCrop()
                     .into(v.iv_preview)
-            v.tv_views.text = wallpapers.views.toString()
         }
 
 

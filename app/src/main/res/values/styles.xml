@@ -7,17 +7,20 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-    <style name="Toolbar" parent="AppTheme">
+    <style name="Toolbar" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimaryDark">#333132</item>
         <item name="colorPrimary">#333132</item>
         <item name="android:spinnerItemStyle">@style/SpinnerItem</item>
         <item name="android:dropDownListViewStyle">@style/SpinnerDropDownItem</item>
+        <item name="android:colorForeground">@color/colorPrimary</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="colorAccent">#333132</item>
     </style>
     <style name="SpinnerItem">
         <item name="android:textColor">@color/colorPrimary</item>
     </style>
-    <style name="SpinnerDropDownItem">
-        <item name="android:textColor">@color/colorPrimary</item>
+    <style name="SpinnerDropDownItem" parent="Widget.AppCompat.Light.Spinner.DropDown.ActionBar">
+        <item name="android:color">@color/colorPrimary</item>
         <item name="android:background">@color/colorPrimaryDark</item>
     </style>
 
