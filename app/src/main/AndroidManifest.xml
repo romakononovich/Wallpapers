@@ -11,7 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".mainactivity.MainActivity"
+        <activity android:name=".ui.activities.MainActivity"
             android:windowSoftInputMode="adjustNothing"
             android:theme="@style/Toolbar">
             <intent-filter>

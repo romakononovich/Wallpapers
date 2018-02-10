@@ -1,4 +1,4 @@
-package xyz.romakononovich.wallcano.mainactivity.model
+package xyz.romakononovich.wallcano.mvp.model
 
 import com.google.gson.annotations.SerializedName
 

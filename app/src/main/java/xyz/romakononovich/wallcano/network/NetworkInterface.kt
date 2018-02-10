@@ -3,7 +3,7 @@ package xyz.romakononovich.wallcano.network
 import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Query
-import xyz.romakononovich.wallcano.mainactivity.model.Wallpapers
+import xyz.romakononovich.wallcano.mvp.model.Wallpapers
 
 /**
  * Created by romank on 04.02.18.

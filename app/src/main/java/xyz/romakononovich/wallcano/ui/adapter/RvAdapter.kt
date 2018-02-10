@@ -1,4 +1,4 @@
-package xyz.romakononovich.wallcano.mainactivity.adapter
+package xyz.romakononovich.wallcano.ui.adapter
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.item_wallpaper.view.*
 import xyz.romakononovich.wallcano.R
-import xyz.romakononovich.wallcano.mainactivity.model.HitsItem
+import xyz.romakononovich.wallcano.mvp.model.HitsItem
 
 /**
  * Created by romank on 04.02.18.
