@@ -2,6 +2,7 @@ package xyz.romakononovich.wallcano.ui.activities
 
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
 import android.view.Menu
 import android.view.MenuItem
@@ -32,7 +33,15 @@ class MainActivity: MvpAppCompatActivity(), MainView,
     private lateinit var menuSearch: MenuItem
     private lateinit var menuItem : MenuItem
     private lateinit var searchView: SearchView
+    private lateinit var layoutManager: GridLayoutManager
 
+    var pageNumber = 1
+    var previousTotal = 0
+    var loading = true
+    private val visibleThreshold = 10
+    var firstVisibleItem = 0
+    var visibleItemCount = 0
+    var totalItemCount = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -41,11 +50,13 @@ class MainActivity: MvpAppCompatActivity(), MainView,
         }
         initRV()
         initView()
+        loadMoreListener()
     }
 
 
     private fun initRV() {
-        rv.layoutManager = GridLayoutManager(applicationContext,2)
+        layoutManager = GridLayoutManager(applicationContext,2)
+        rv.layoutManager = layoutManager
         rvAdapter = RvAdapter()
         rv.adapter = rvAdapter
     }
@@ -118,6 +129,34 @@ class MainActivity: MvpAppCompatActivity(), MainView,
         menuItem.isVisible = true
         menuSearch.isVisible = false
         return true
+    }
+
+
+    private fun loadMoreListener() {
+        rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView,
+                                    dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+
+                visibleItemCount = recyclerView.childCount
+                totalItemCount = layoutManager.itemCount
+                firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
+
+                if (loading) {
+                    if (totalItemCount > previousTotal) {
+                        loading = false
+                        previousTotal = totalItemCount
+                    }
+                }
+
+                if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
+                    pageNumber++
+                    presenter.requestTest(pageNumber)
+                    loading = true
+                }
+            }
+        })
     }
 
 }

@@ -25,15 +25,27 @@ class MainPresenter: MvpPresenter<MainView>() {
         super.onFirstViewAttach()
         networkInterface = App.networkInterface
         viewState.showProgressBar()
+        compositeDisposable = CompositeDisposable()
         requestTest()
     }
 
 
     private fun requestTest() {
-        compositeDisposable = CompositeDisposable()
         compositeDisposable
                 .add(networkInterface?.queryEvents("7777255-2f5dd39fd3ed727de44fde30f",
-                        "vertical","photo")?.subscribeOn(Schedulers.io())
+                        "vertical",1,true,"photo")?.subscribeOn(Schedulers.io())
+                        ?.observeOn(AndroidSchedulers.mainThread())?.subscribe({
+                    wallpapers -> viewState.onWallpapersLoaded(wallpapers.hits)
+                    viewState.hideProgressBar()
+                    listWallpapers.addAll(wallpapers.hits)}, {
+                    throwable -> Log.d("TAG", "Exception while querying events : " + throwable.message) })!!)
+
+    }
+
+    fun requestTest(page: Int) {
+        compositeDisposable
+                .add(networkInterface?.queryEvents("7777255-2f5dd39fd3ed727de44fde30f",
+                        "vertical",page,true,"photo")?.subscribeOn(Schedulers.io())
                         ?.observeOn(AndroidSchedulers.mainThread())?.subscribe({
                     wallpapers -> viewState.onWallpapersLoaded(wallpapers.hits)
                     viewState.hideProgressBar()

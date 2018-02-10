@@ -14,5 +14,7 @@ interface NetworkInterface{
     abstract fun queryEvents(
             @Query("key") accessToken: String,
             @Query("orientation") orientation: String,
+            @Query("page") page: Int,
+            @Query("safesearch") safesearch: Boolean,
             @Query("image_type") type: String): Single<Wallpapers>
 }
