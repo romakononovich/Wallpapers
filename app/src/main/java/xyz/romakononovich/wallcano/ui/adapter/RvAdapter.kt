@@ -32,6 +32,10 @@ class RvAdapter : RecyclerView.Adapter<RvAdapter.ViewHolder>() {
         listWallpapers.addAll(list)
         notifyDataSetChanged()
     }
+    fun clearAll(){
+        listWallpapers.clear()
+        notifyDataSetChanged()
+    }
 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

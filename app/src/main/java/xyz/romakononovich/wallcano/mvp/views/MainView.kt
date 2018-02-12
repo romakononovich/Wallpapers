@@ -22,7 +22,7 @@ interface MainView: MvpView {
 
     fun showDialogCategory()
 
-    fun hideDialogCategory()
+    fun clearRV()
 
 
 }

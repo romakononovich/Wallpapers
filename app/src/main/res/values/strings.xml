@@ -6,4 +6,24 @@
         <item>LATEST</item>
         <item>EDITOR\'S CHOICE</item>
     </string-array>
+
+    <string name="category_fashion">Beauty/Fashion</string>
+    <string name="category_nature">Nature/Landscapes</string>
+    <string name="category_backgrounds">Backgrounds/Textures</string>
+    <string name="category_science">Science/Technology</string>
+    <string name="category_education">Education</string>
+    <string name="category_people">People</string>
+    <string name="category_feelings">Emotions</string>
+    <string name="category_religion">Religion</string>
+    <string name="category_health">Health/Medical</string>
+    <string name="category_places">Places/Monuments</string>
+    <string name="category_animals">Animals</string>
+    <string name="category_industry">Industry/Craft</string>
+    <string name="category_food">Food/Drink</string>
+    <string name="category_computer">Computer/Communication</string>
+    <string name="category_transportation">Transportation/Traffic</string>
+    <string name="category_travel">Travel/Vacation</string>
+    <string name="category_buildings">Architecture/Buildings</string>
+    <string name="category_business">Business/Finance</string>
+    <string name="category_music">Music</string>
 </resources>

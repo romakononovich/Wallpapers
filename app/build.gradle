@@ -37,6 +37,7 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.1.8'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.victor:lib:1.0.4'
+    implementation 'com.orhanobut:dialogplus:1.11@aar'
     //MVP
     compile 'com.arello-mobile:moxy:1.5.3'
     compile 'com.arello-mobile:moxy-android:1.5.3'

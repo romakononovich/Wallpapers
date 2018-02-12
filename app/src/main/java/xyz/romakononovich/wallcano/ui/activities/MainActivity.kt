@@ -18,6 +18,14 @@ import xyz.romakononovich.wallcano.mvp.presenters.MainPresenter
 import xyz.romakononovich.wallcano.mvp.views.MainView
 import xyz.romakononovich.wallcano.util.setupActionBar
 import java.util.ArrayList
+import com.orhanobut.dialogplus.*
+import kotlinx.android.synthetic.main.toolbar.*
+import xyz.romakononovich.wallcano.ui.adapter.DialogAdapter
+import android.widget.AdapterView
+import android.widget.Toast
+
+
+
 
 /**
  * Created by romank on 10.02.18.
@@ -42,6 +50,8 @@ class MainActivity: MvpAppCompatActivity(), MainView,
     var firstVisibleItem = 0
     var visibleItemCount = 0
     var totalItemCount = 0
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -50,18 +60,31 @@ class MainActivity: MvpAppCompatActivity(), MainView,
         }
         initRV()
         initView()
+        spinnerListener()
         loadMoreListener()
+    }
+
+    private fun spinnerListener() {
+        spinner_nav.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                presenter.changeOrder(position)
+            }
+
+        }
     }
 
 
     private fun initRV() {
-        layoutManager = GridLayoutManager(applicationContext,2)
+        layoutManager = GridLayoutManager(applicationContext,3)
         rv.layoutManager = layoutManager
         rvAdapter = RvAdapter()
         rv.adapter = rvAdapter
     }
     private fun initView(){
         iv_search.setOnClickListener(this)
+        iv_category.setOnClickListener(this)
     }
     override fun onWallpapersLoaded(list: ArrayList<HitsItem>) {
         rvAdapter.addData(list)
@@ -83,11 +106,18 @@ class MainActivity: MvpAppCompatActivity(), MainView,
     }
 
     override fun showDialogCategory() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val dialogPlus = DialogPlus.newDialog(this)
+                .setAdapter(DialogAdapter(presenter.initCategory() ,this))
+                .setHeader(R.layout.dialog_header)
+                .setCancelable(true)
+                .setContentBackgroundResource(R.color.colorPrimaryDark)
+                .setExpanded(true)
+                .create()
+        dialogPlus.show()
     }
 
-    override fun hideDialogCategory() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun clearRV() {
+        rvAdapter.clearAll()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -116,6 +146,7 @@ class MainActivity: MvpAppCompatActivity(), MainView,
                searchView.isIconified = false
                menuSearch.expandActionView()
            }
+            iv_category -> showDialogCategory()
         }
     }
 
@@ -137,8 +168,6 @@ class MainActivity: MvpAppCompatActivity(), MainView,
             override fun onScrolled(recyclerView: RecyclerView,
                                     dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-
-
                 visibleItemCount = recyclerView.childCount
                 totalItemCount = layoutManager.itemCount
                 firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
