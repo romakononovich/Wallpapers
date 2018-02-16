@@ -3,8 +3,10 @@ package xyz.romakononovich.wallcano.mvp.presenters
 import android.util.Log
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
+import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.processors.PublishProcessor
 import io.reactivex.schedulers.Schedulers
 import xyz.romakononovich.wallcano.App
 import xyz.romakononovich.wallcano.Config
@@ -12,6 +14,7 @@ import xyz.romakononovich.wallcano.Constants
 import xyz.romakononovich.wallcano.R
 import xyz.romakononovich.wallcano.mvp.model.CategoryDialog
 import xyz.romakononovich.wallcano.mvp.model.HitsItem
+import xyz.romakononovich.wallcano.mvp.model.Wallpapers
 import xyz.romakononovich.wallcano.mvp.views.MainView
 import xyz.romakononovich.wallcano.network.NetworkInterface
 
@@ -23,65 +26,95 @@ import xyz.romakononovich.wallcano.network.NetworkInterface
 class MainPresenter: MvpPresenter<MainView>() {
     private lateinit var compositeDisposable: CompositeDisposable
     private var listWallpapers = ArrayList<HitsItem>()
-    private var networkInterface: NetworkInterface? = null
+    private lateinit var networkInterface: NetworkInterface
+    private var paginator = PublishProcessor.create<Int>()
+    private var pageNumber = 1
+    private var orderPosition = 0
+
+
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
-        networkInterface = App.networkInterface
+        networkInterface = App.networkInterface!!
         viewState.showProgressBar()
         compositeDisposable = CompositeDisposable()
-        requestTest()
+      //  requestTest()
+       // subscribeForData(Constants.ORDER_POPULAR)
     }
 
 
-    private fun requestTest() {
-        viewState.showProgressBar()
-        compositeDisposable
-                .add(networkInterface?.queryEvents(Config.ApiKey,
-                        Constants.ORIENTATION_VERTICAL,Constants.ORDER_LATEST,
-                        1,true,Constants.TYPE_PHOTO)?.subscribeOn(Schedulers.io())
-                        ?.observeOn(AndroidSchedulers.mainThread())?.subscribe({
-                    wallpapers -> viewState.onWallpapersLoaded(wallpapers.hits)
-                    viewState.hideProgressBar()
-                    listWallpapers.addAll(wallpapers.hits)}, {
-                    throwable -> Log.d("TAG", "Exception while querying events : " + throwable.message) })!!)
-
-    }
-
-    fun requestTest(page: Int) {
-        compositeDisposable
-                .add(networkInterface?.queryEvents(Config.ApiKey,
-                        Constants.ORIENTATION_VERTICAL,Constants.ORDER_LATEST,
-                        page,true,Constants.TYPE_PHOTO)?.subscribeOn(Schedulers.io())
-                        ?.observeOn(AndroidSchedulers.mainThread())?.subscribe({
-                    wallpapers -> viewState.onWallpapersLoaded(wallpapers.hits)
-                    viewState.hideProgressBar()
-                    listWallpapers.addAll(wallpapers.hits)}, {
-                    throwable -> Log.d("TAG", "Exception while querying events : " + throwable.message) })!!)
-    }
+//    private fun requestTest() {
+//        viewState.showProgressBar()
+//        compositeDisposable
+//                .add(networkInterface.queryEvents(Config.ApiKey,
+//                        Constants.ORIENTATION_VERTICAL,Constants.ORDER_LATEST,
+//                        1,true,Constants.TYPE_PHOTO).subscribeOn(Schedulers.io())
+//                        ?.observeOn(AndroidSchedulers.mainThread())?.subscribe({
+//                    wallpapers -> viewState.onWallpapersLoaded(wallpapers.hits)
+//                    viewState.hideProgressBar()
+//                    listWallpapers.addAll(wallpapers.hits)}, {
+//                    throwable -> Log.d("TAG", "Exception while querying events : " + throwable.message) })!!)
+//
+//    }
+//
+//    fun requestTest(page: Int) {
+//        compositeDisposable
+//                .add(networkInterface.queryEvents(Config.ApiKey,
+//                        Constants.ORIENTATION_VERTICAL,Constants.ORDER_LATEST,
+//                        page,true,Constants.TYPE_PHOTO).subscribeOn(Schedulers.io())
+//                        ?.observeOn(AndroidSchedulers.mainThread())?.subscribe({
+//                    wallpapers -> viewState.onWallpapersLoaded(wallpapers.hits)
+//                    viewState.hideProgressBar()
+//                    listWallpapers.addAll(wallpapers.hits)}, {
+//                    throwable -> Log.d("TAG", "Exception while querying events : " + throwable.message) })!!)
+//    }
 
 
 
     fun changeOrder(position: Int) {
-        var order = ""
-        viewState.clearRV()
-        viewState.showProgressBar()
+        var order = Constants.ORDER_POPULAR
+            viewState.clearRV()
+            viewState.showProgressBar()
+            orderPosition = position
+            when (position) {
+                0 -> order = Constants.ORDER_POPULAR
+                1 -> order = Constants.ORDER_UPCOMING
+                2 -> order = Constants.ORDER_LATEST
+                3 -> order = Constants.ORDER_EDITORS_CHOICE
+            }
+            subscribeForData(order)
+    }
 
-        when (position) {
-            0-> order = Constants.ORDER_POPULAR
-            1-> order = Constants.ORDER_UPCOMING
-            2-> order = Constants.ORDER_LATEST
-            3-> order = Constants.ORDER_EDITORS_CHOICE
-        }
-        compositeDisposable
-                .add(networkInterface?.queryEvents(Config.ApiKey,
-                        Constants.ORIENTATION_VERTICAL,order,
-                        1,true,Constants.TYPE_PHOTO)?.subscribeOn(Schedulers.io())
-                        ?.observeOn(AndroidSchedulers.mainThread())?.subscribe({
-                    wallpapers -> viewState.onWallpapersLoaded(wallpapers.hits)
+    private fun subscribeForData(order: String) {
+//        viewState.clearRV()
+//        compositeDisposable.clear()
+//        pageNumber = 1
+//        paginator = null
+//        paginator = PublishProcessor.create<Int>()
+        val disposable = paginator
+                .onBackpressureDrop()
+                .concatMap { t ->
+                    loadMoreData(t,order)
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ wallpapers ->
+                    viewState.onWallpapersLoaded(wallpapers.hits)
+                    viewState.isLoading(false)
                     viewState.hideProgressBar()
-                    listWallpapers.addAll(wallpapers.hits)}, {
-                    throwable -> Log.d("TAG", "Exception while querying events : " + throwable.message) })!!)
+                }, {throwable ->viewState.showToast(throwable.message.toString())})
+        compositeDisposable.add(disposable)
+        paginator.onNext(pageNumber)
+    }
+    fun loadNextPage(){
+        pageNumber++
+        paginator.onNext(pageNumber)
+    }
+    private fun loadMoreData(page: Int, order: String): Flowable<Wallpapers> {
+        viewState.showToast("Order:"+order+"Page: "+page)
+        return networkInterface.queryWallpapers(Config.ApiKey, Constants.ORIENTATION_VERTICAL,
+                order, page, true, Constants.TYPE_PHOTO)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
     }
 
     internal fun initCategory() : ArrayList<CategoryDialog> {

@@ -24,5 +24,9 @@ interface MainView: MvpView {
 
     fun clearRV()
 
+    fun isLoading(isLoading: Boolean)
+
+    fun showToast(text: String)
+
 
 }

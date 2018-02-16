@@ -35,6 +35,7 @@ class MainActivity: MvpAppCompatActivity(), MainView,
         View.OnClickListener{
 
 
+
     @InjectPresenter
     lateinit var presenter: MainPresenter
     private lateinit var rvAdapter: RvAdapter
@@ -43,7 +44,6 @@ class MainActivity: MvpAppCompatActivity(), MainView,
     private lateinit var searchView: SearchView
     private lateinit var layoutManager: GridLayoutManager
 
-    var pageNumber = 1
     var previousTotal = 0
     var loading = true
     private val visibleThreshold = 10
@@ -67,7 +67,6 @@ class MainActivity: MvpAppCompatActivity(), MainView,
     private fun spinnerListener() {
         spinner_nav.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
-
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 presenter.changeOrder(position)
             }
@@ -180,12 +179,19 @@ class MainActivity: MvpAppCompatActivity(), MainView,
                 }
 
                 if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
-                    pageNumber++
-                    presenter.requestTest(pageNumber)
                     loading = true
+                    presenter.loadNextPage()
                 }
             }
         })
+    }
+
+    override fun isLoading(isLoading: Boolean) {
+        loading = isLoading
+    }
+
+    override fun showToast(text: String) {
+       Toast.makeText(this,text,Toast.LENGTH_SHORT).show()
     }
 
 }

@@ -6,7 +6,10 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:background="@color/colorPrimaryDark"
-    android:padding="12dp">
+    android:paddingTop="24dp"
+    android:paddingLeft="24dp"
+    android:paddingBottom="20dp"
+    >
 
     <TextView
         android:layout_width="0dp"
@@ -14,13 +17,15 @@
         android:layout_weight="1"
         android:text="Category"
         android:textColor="@color/colorPrimary"
+        android:fontFamily="sans-serif-medium"
         android:textSize="@dimen/header_text_size"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Swipe up to see all"
+        android:paddingRight="24dp"
         android:textColor="@color/colorAccent"
-        android:textSize="12sp"/>
+        android:textSize="14sp"/>
 
 </LinearLayout>
