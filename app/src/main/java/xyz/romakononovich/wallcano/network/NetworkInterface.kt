@@ -26,6 +26,7 @@ interface NetworkInterface{
             @Query("orientation") orientation: String,
             @Query("order") order: String,
             @Query("page") page: Int,
+            @Query("per_page") per_page: Int,
             @Query("safesearch") safesearch: Boolean,
             @Query("image_type") type: String): Flowable<Wallpapers>
 }

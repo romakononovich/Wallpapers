@@ -46,7 +46,7 @@ class MainActivity: MvpAppCompatActivity(), MainView,
 
     var previousTotal = 0
     var loading = true
-    private val visibleThreshold = 10
+    private val visibleThreshold = 24
     var firstVisibleItem = 0
     var visibleItemCount = 0
     var totalItemCount = 0
@@ -173,7 +173,7 @@ class MainActivity: MvpAppCompatActivity(), MainView,
 
                 if (loading) {
                     if (totalItemCount > previousTotal) {
-                        loading = false
+                        //loading = false
                         previousTotal = totalItemCount
                     }
                 }
