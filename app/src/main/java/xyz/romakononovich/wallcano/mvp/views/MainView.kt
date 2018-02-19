@@ -28,5 +28,6 @@ interface MainView: MvpView {
 
     fun showToast(text: String)
 
+    fun setIconDialog (iconResId: Int)
 
 }

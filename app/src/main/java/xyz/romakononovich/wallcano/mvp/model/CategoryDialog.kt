@@ -6,5 +6,6 @@ package xyz.romakononovich.wallcano.mvp.model
  */
 data class CategoryDialog(
         val iconResId: Int,
-        val name: String
+        val name: String,
+        val category: String
 )

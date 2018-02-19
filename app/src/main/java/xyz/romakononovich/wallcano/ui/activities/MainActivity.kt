@@ -109,6 +109,11 @@ class MainActivity: MvpAppCompatActivity(), MainView,
                 .setAdapter(DialogAdapter(presenter.initCategory() ,this))
                 .setHeader(R.layout.dialog_header)
                 .setCancelable(true)
+                .setOnItemClickListener { dialog, _, _, position ->
+                    presenter.setIconDialog(position)
+                    presenter.changeCategory(position)
+                    dialog.dismiss()
+                }
                 .setContentBackgroundResource(R.color.colorPrimaryDark)
                 .setExpanded(true)
                 .create()
@@ -192,6 +197,10 @@ class MainActivity: MvpAppCompatActivity(), MainView,
 
     override fun showToast(text: String) {
        Toast.makeText(this,text,Toast.LENGTH_SHORT).show()
+    }
+
+    override fun setIconDialog(iconResId: Int) {
+        iv_category.setImageResource(iconResId)
     }
 
 }

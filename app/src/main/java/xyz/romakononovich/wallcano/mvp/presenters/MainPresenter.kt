@@ -23,14 +23,14 @@ import xyz.romakononovich.wallcano.network.NetworkInterface
  */
 
 @InjectViewState
-class MainPresenter: MvpPresenter<MainView>() {
+class MainPresenter : MvpPresenter<MainView>() {
     private lateinit var compositeDisposable: CompositeDisposable
     private var listWallpapers = ArrayList<HitsItem>()
     private lateinit var networkInterface: NetworkInterface
     private var paginator = PublishProcessor.create<Int>()
     private var pageNumber = 1
     private var orderPosition = 0
-
+    private var categoryWallpapers = "all"
 
 
     override fun onFirstViewAttach() {
@@ -41,21 +41,22 @@ class MainPresenter: MvpPresenter<MainView>() {
     }
 
 
-    fun changeOrder(position: Int) {
+    fun changeOrder(position: Int = orderPosition, category: String = categoryWallpapers) {
         var order = Constants.ORDER_POPULAR
-            viewState.clearRV()
-            viewState.showProgressBar()
-            orderPosition = position
-            when (position) {
-                0 -> order = Constants.ORDER_POPULAR
-                1 -> order = Constants.ORDER_UPCOMING
-                2 -> order = Constants.ORDER_LATEST
-                3 -> order = Constants.ORDER_EDITORS_CHOICE
-            }
-            subscribeForData(order)
+        viewState.clearRV()
+        viewState.showProgressBar()
+        orderPosition = position
+        categoryWallpapers = category
+        when (position) {
+            0 -> order = Constants.ORDER_POPULAR
+            1 -> order = Constants.ORDER_UPCOMING
+            2 -> order = Constants.ORDER_LATEST
+            3 -> order = Constants.ORDER_EDITORS_CHOICE
+        }
+        subscribeForData(order, category)
     }
 
-    private fun subscribeForData(order: String) {
+    private fun subscribeForData(order: String, category: String) {
         compositeDisposable.clear()
         pageNumber = 1
         paginator = null
@@ -64,51 +65,61 @@ class MainPresenter: MvpPresenter<MainView>() {
         val disposable = paginator
                 .onBackpressureDrop()
                 .concatMap { t ->
-                    loadMoreData(t,order)
+                    loadMoreData(t, order, category)
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ wallpapers ->
                     viewState.onWallpapersLoaded(wallpapers.hits)
                     viewState.isLoading(false)
                     viewState.hideProgressBar()
-                }, {throwable ->viewState.showToast(throwable.message.toString())})
+                }, { throwable -> viewState.showToast(throwable.message.toString()) })
         compositeDisposable.add(disposable)
         paginator.onNext(pageNumber)
     }
-    fun loadNextPage(){
+
+    fun loadNextPage() {
         viewState.isLoading(true)
         pageNumber++
         paginator.onNext(pageNumber)
     }
-    private fun loadMoreData(page: Int, order: String): Flowable<Wallpapers> {
-        viewState.showToast("Order:$order Page: $page")
+
+    private fun loadMoreData(page: Int, order: String, category: String): Flowable<Wallpapers> {
+        viewState.showToast("Order:$order Page: $page Category: $category")
         return networkInterface.queryWallpapers(Config.ApiKey, Constants.ORIENTATION_VERTICAL,
-                order, page, Constants.PER_PAGE,true, Constants.TYPE_PHOTO)
+                order, category, page, Constants.PER_PAGE, true, Constants.TYPE_PHOTO)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
     }
 
-    internal fun initCategory() : ArrayList<CategoryDialog> {
+    fun setIconDialog(position: Int) {
+        viewState.setIconDialog(initCategory()[position].iconResId)
+    }
+
+    fun changeCategory(position: Int) {
+        changeOrder(category = initCategory()[position].category)
+    }
+
+    internal fun initCategory(): ArrayList<CategoryDialog> {
         val list = ArrayList<CategoryDialog>()
-        list.add(CategoryDialog(R.drawable.ic_category_animals, "Animals"))
-        list.add(CategoryDialog(R.drawable.ic_category_backgrounds, "Backgrounds/Textures"))
-        list.add(CategoryDialog(R.drawable.ic_category_buildings, "Architecture/Buildings"))
-        list.add(CategoryDialog(R.drawable.ic_category_business, "Business/Finance"))
-        list.add(CategoryDialog(R.drawable.ic_category_computer, "Computer/Communication"))
-        list.add(CategoryDialog(R.drawable.ic_category_education, "Education"))
-        list.add(CategoryDialog(R.drawable.ic_category_fashion, "Beauty/Fashion"))
-        list.add(CategoryDialog(R.drawable.ic_category_feelings, "Emotions"))
-        list.add(CategoryDialog(R.drawable.ic_category_food, "Food/Drink"))
-        list.add(CategoryDialog(R.drawable.ic_category_health, "Health/Medical"))
-        list.add(CategoryDialog(R.drawable.ic_category_industry, "Industry/Craft"))
-        list.add(CategoryDialog(R.drawable.ic_category_music, "Music"))
-        list.add(CategoryDialog(R.drawable.ic_category_nature, "Nature/Landscapes"))
-        list.add(CategoryDialog(R.drawable.ic_category_people, "People"))
-        list.add(CategoryDialog(R.drawable.ic_category_places, "Places/Monuments"))
-        list.add(CategoryDialog(R.drawable.ic_category_religion, "Religion"))
-        list.add(CategoryDialog(R.drawable.ic_category_science, "Science/Technology"))
-        list.add(CategoryDialog(R.drawable.ic_category_transportation, "Transportation/Traffic"))
-        list.add(CategoryDialog(R.drawable.ic_category_travel, "Travel/Vacation"))
+        list.add(CategoryDialog(R.drawable.ic_category_animals, "Animals", "animals"))
+        list.add(CategoryDialog(R.drawable.ic_category_backgrounds, "Backgrounds/Textures", "backgrounds"))
+        list.add(CategoryDialog(R.drawable.ic_category_buildings, "Architecture/Buildings", "buildings"))
+        list.add(CategoryDialog(R.drawable.ic_category_business, "Business/Finance", "business"))
+        list.add(CategoryDialog(R.drawable.ic_category_computer, "Computer/Communication", "computer"))
+        list.add(CategoryDialog(R.drawable.ic_category_education, "Education", "education"))
+        list.add(CategoryDialog(R.drawable.ic_category_fashion, "Beauty/Fashion", "fashion"))
+        list.add(CategoryDialog(R.drawable.ic_category_feelings, "Emotions", "feelings"))
+        list.add(CategoryDialog(R.drawable.ic_category_food, "Food/Drink", "food"))
+        list.add(CategoryDialog(R.drawable.ic_category_health, "Health/Medical", "health"))
+        list.add(CategoryDialog(R.drawable.ic_category_industry, "Industry/Craft", "industry"))
+        list.add(CategoryDialog(R.drawable.ic_category_music, "Music", "music"))
+        list.add(CategoryDialog(R.drawable.ic_category_nature, "Nature/Landscapes", "nature"))
+        list.add(CategoryDialog(R.drawable.ic_category_people, "People", "people"))
+        list.add(CategoryDialog(R.drawable.ic_category_places, "Places/Monuments", "places"))
+        list.add(CategoryDialog(R.drawable.ic_category_religion, "Religion", "religion"))
+        list.add(CategoryDialog(R.drawable.ic_category_science, "Science/Technology", "science"))
+        list.add(CategoryDialog(R.drawable.ic_category_transportation, "Transportation/Traffic", "transportation"))
+        list.add(CategoryDialog(R.drawable.ic_category_travel, "Travel/Vacation", "travel"))
 
         return list
     }

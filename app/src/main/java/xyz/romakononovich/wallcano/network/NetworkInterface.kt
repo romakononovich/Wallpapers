@@ -25,6 +25,7 @@ interface NetworkInterface{
             @Query("key") accessToken: String,
             @Query("orientation") orientation: String,
             @Query("order") order: String,
+            @Query("category") category: String,
             @Query("page") page: Int,
             @Query("per_page") per_page: Int,
             @Query("safesearch") safesearch: Boolean,
